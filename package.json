@@ -1,0 +1,69 @@
+{
+   "name":"wcag-contrast-utils",
+   "version":"1.0.0",
+   "description": "WCAG Contrast Utils is a TypeScript library for calculating color contrast ratios and checking WCAG 2.1 compliance. Ensure your web designs meet accessibility standards with easy-to-use functions for developers and designers.",
+   "author":"Pavlo Golovatyy",
+   "license":"MIT",
+   "keywords": [
+      "WCAG",
+      "contrast",
+      "accessibility",
+      "color",
+      "web",
+      "design",
+      "compliance",
+      "a11y"
+   ],
+   "main":"dist/index.js",
+   "typings":"dist/index.d.ts",
+   "files":[
+      "dist",
+      "src"
+   ],
+   "engines":{
+      "node":">=10"
+   },
+   "scripts":{
+      "start":"tsdx watch",
+      "build":"tsdx build",
+      "test":"tsdx test",
+      "lint":"tsdx lint",
+      "prepare":"tsdx build",
+      "size":"size-limit",
+      "analyze":"size-limit --why"
+   },
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/pavlogolovatyy/wcag-contrast-utils.git"
+   },
+   "husky":{
+      "hooks":{
+         "pre-commit":"tsdx lint"
+      }
+   },
+   "prettier":{
+      "printWidth":80,
+      "semi":true,
+      "singleQuote":true,
+      "trailingComma":"es5"
+   },
+   "module":"dist/wcag-contrast-utils.esm.js",
+   "size-limit":[
+      {
+         "path":"dist/wcag-contrast-utils.cjs.production.min.js",
+         "limit":"10 KB"
+      },
+      {
+         "path":"dist/wcag-contrast-utils.esm.js",
+         "limit":"10 KB"
+      }
+   ],
+   "devDependencies":{
+      "@size-limit/preset-small-lib":"^11.1.6",
+      "husky":"^9.1.7",
+      "size-limit":"^11.1.6",
+      "tsdx":"^0.14.1",
+      "tslib":"^2.8.1",
+      "typescript":"^3.9.10"
+   }
+}
