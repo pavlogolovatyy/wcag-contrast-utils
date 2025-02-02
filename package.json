@@ -1,6 +1,6 @@
 {
    "name":"wcag-contrast-utils",
-   "version":"1.0.0",
+   "version":"1.0.1",
    "description": "WCAG Contrast Utils is a TypeScript library for calculating color contrast ratios and checking WCAG 2.1 compliance. Ensure your web designs meet accessibility standards with easy-to-use functions for developers and designers.",
    "author":"Pavlo Golovatyy",
    "license":"MIT",
