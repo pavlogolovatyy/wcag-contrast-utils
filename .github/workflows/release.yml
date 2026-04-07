@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify tag matches package version
+        run: |
+          package_version="$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")"
+          tag_version="${GITHUB_REF_NAME#v}"
+
+          if [ "$package_version" != "$tag_version" ]; then
+            echo "Tag version ($tag_version) does not match package.json version ($package_version)." >&2
+            exit 1
+          fi
+
+      - name: Validate package
+        run: npm run validate
+
+      - name: Publish stable release to npm
+        if: ${{ !contains(github.ref_name, '-') }}
+        run: npm publish
+
+      - name: Publish prerelease to npm
+        if: ${{ contains(github.ref_name, '-') }}
+        run: npm publish --tag next
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "GitHub release $GITHUB_REF_NAME already exists."
+            exit 0
+          fi
+
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            gh release create "$GITHUB_REF_NAME" \
+              --verify-tag \
+              --generate-notes \
+              --prerelease
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --verify-tag \
+              --generate-notes \
+              --latest
+          fi
+
+      - name: Write release summary
+        run: |
+          echo "Published \`wcag-contrast-utils@${GITHUB_REF_NAME#v}\` from tag \`$GITHUB_REF_NAME\`." >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            echo "npm dist-tag: \`next\`" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "npm dist-tag: \`latest\`" >> "$GITHUB_STEP_SUMMARY"
+          fi

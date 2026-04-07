@@ -1,69 +1,87 @@
 {
-   "name":"wcag-contrast-utils",
-   "version":"1.0.1",
-   "description": "WCAG Contrast Utils is a TypeScript library for calculating color contrast ratios and checking WCAG 2.1 compliance. Ensure your web designs meet accessibility standards with easy-to-use functions for developers and designers.",
-   "author":"Pavlo Golovatyy",
-   "license":"MIT",
-   "keywords": [
-      "WCAG",
-      "contrast",
-      "accessibility",
-      "color",
-      "web",
-      "design",
-      "compliance",
-      "a11y"
-   ],
-   "main":"dist/index.js",
-   "typings":"dist/index.d.ts",
-   "files":[
-      "dist",
-      "src"
-   ],
-   "engines":{
-      "node":">=10"
-   },
-   "scripts":{
-      "start":"tsdx watch",
-      "build":"tsdx build",
-      "test":"tsdx test",
-      "lint":"tsdx lint",
-      "prepare":"tsdx build",
-      "size":"size-limit",
-      "analyze":"size-limit --why"
-   },
-   "repository": {
-      "type": "git",
-      "url": "https://github.com/pavlogolovatyy/wcag-contrast-utils.git"
-   },
-   "husky":{
-      "hooks":{
-         "pre-commit":"tsdx lint"
-      }
-   },
-   "prettier":{
-      "printWidth":80,
-      "semi":true,
-      "singleQuote":true,
-      "trailingComma":"es5"
-   },
-   "module":"dist/wcag-contrast-utils.esm.js",
-   "size-limit":[
-      {
-         "path":"dist/wcag-contrast-utils.cjs.production.min.js",
-         "limit":"10 KB"
+  "name": "wcag-contrast-utils",
+  "version": "1.0.1",
+  "description": "A production-ready TypeScript utility for calculating contrast ratios and validating WCAG 2.1 color accessibility requirements.",
+  "type": "module",
+  "packageManager": "npm@11.6.1",
+  "author": "Pavlo Golovatyy",
+  "license": "MIT",
+  "keywords": [
+    "WCAG",
+    "contrast",
+    "accessibility",
+    "color",
+    "web",
+    "design",
+    "compliance",
+    "a11y",
+    "typescript",
+    "color-contrast"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": {
+        "import": "./dist/index.d.mts",
+        "require": "./dist/index.d.cts"
       },
-      {
-         "path":"dist/wcag-contrast-utils.esm.js",
-         "limit":"10 KB"
-      }
-   ],
-   "devDependencies":{
-      "@size-limit/preset-small-lib":"^11.1.6",
-      "husky":"^9.1.7",
-      "size-limit":"^11.1.6",
-      "tsdx":"^0.14.1",
-      "tslib":"^2.8.1",
-      "typescript":"^3.9.10"
-   }
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "build:check": "cross-env TSDOWN_VALIDATE_PACKAGE=true npm_config_cache=/tmp/wcag-contrast-utils-npm-cache tsdown",
+    "dev": "tsdown --watch",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate": "npm run lint && npm run typecheck && npm run test && npm run build:check && npm run size",
+    "prepack": "npm run build",
+    "size": "size-limit",
+    "pack:check": "npm pack --dry-run --ignore-scripts --cache /tmp/wcag-contrast-utils-npm-cache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavlogolovatyy/wcag-contrast-utils.git"
+  },
+  "homepage": "https://github.com/pavlogolovatyy/wcag-contrast-utils#readme",
+  "bugs": {
+    "url": "https://github.com/pavlogolovatyy/wcag-contrast-utils/issues"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.cjs",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/index.mjs",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@arethetypeswrong/core": "^0.18.2",
+    "@eslint/js": "^9.38.0",
+    "@size-limit/preset-small-lib": "^12.0.1",
+    "@types/node": "^24.9.1",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.38.0",
+    "publint": "^0.3.18",
+    "size-limit": "^11.2.0",
+    "tsdown": "^0.21.7",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.2",
+    "vitest": "^3.2.4"
+  }
 }

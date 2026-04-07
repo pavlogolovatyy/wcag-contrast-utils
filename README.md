@@ -1,67 +1,131 @@
 # WCAG Contrast Utils
 
-## Description
+Lightweight TypeScript utilities for computing color contrast ratios and evaluating WCAG 2.1 text contrast requirements.
 
-WCAG Contrast Utils is a TypeScript library for calculating the contrast ratio between two colors and checking whether it meets WCAG 2.1 accessibility standards.
+## Why this package
 
-This library is useful for developers and designers who want to ensure that their websites or applications comply with accessibility standards, improving readability and usability for all users, including those with visual impairments.
+- Strict color input validation for safer production use
+- Accurate contrast calculation without forced rounding
+- Clear WCAG compliance summaries for normal and large text
+- Small API surface that works well in apps, design tooling, and CI checks
+- Modern toolchain with `tsdown`, `Vitest`, ESLint flat config, and package validation
 
 ## Installation
-
-You can install the library via npm or yarn:
 
 ```sh
 npm install wcag-contrast-utils
 ```
 
-or
+## Quick start
+
+```ts
+import {
+  contrastRatio,
+  getWCAGCompliance,
+  meetsWCAG,
+} from 'wcag-contrast-utils';
+
+const ratio = contrastRatio('#1f2937', '#ffffff');
+const roundedRatio = contrastRatio('#1f2937', '#ffffff', { precision: 2 });
+const compliance = getWCAGCompliance('#1f2937', '#ffffff');
+
+console.log(ratio);
+console.log(roundedRatio);
+console.log(compliance.summary);
+console.log(meetsWCAG(ratio, 'AA', 'normal'));
+```
+
+## API
+
+### `contrastRatio(color1, color2, options?)`
+
+Returns the WCAG contrast ratio between two colors.
+
+- Accepts `#RGB`, `#RRGGBB`, `RGB`, or `RRGGBB`
+- Accepts RGB tuples such as `[255, 255, 255]`
+- Returns the exact ratio by default
+- Supports optional display rounding via `{ precision: number }`
+
+```ts
+contrastRatio('#000000', '#ffffff'); // 21
+contrastRatio('#777777', '#ffffff'); // 4.478089453577214
+contrastRatio('#777777', '#ffffff', { precision: 2 }); // 4.48
+```
+
+### `getWCAGCompliance(contrast)` or `getWCAGCompliance(color1, color2)`
+
+Returns a structured result with detailed AA and AAA coverage.
+
+```ts
+const compliance = getWCAGCompliance(4.5);
+
+console.log(compliance.summary);
+// WCAG 2.1 AA compliant for normal text and AAA compliant for large text
+
+console.log(compliance.aa.normalText); // true
+console.log(compliance.aaa.normalText); // false
+```
+
+### `meetsWCAG(contrast, level?, textSize?)`
+
+Checks a specific WCAG target.
+
+```ts
+meetsWCAG(4.5, 'AA', 'normal'); // true
+meetsWCAG(4.5, 'AAA', 'normal'); // false
+meetsWCAG(4.5, 'AAA', 'large'); // true
+```
+
+### `passesWCAG(contrast)`
+
+Returns a human-readable compliance summary.
+
+```ts
+passesWCAG(3); // "WCAG 2.1 AA compliant for large text"
+```
+
+## WCAG 2.1 text contrast thresholds
+
+- `AA normal text`: `4.5:1`
+- `AA large text`: `3:1`
+- `AAA normal text`: `7:1`
+- `AAA large text`: `4.5:1`
+
+## Validation behavior
+
+The package throws descriptive errors when:
+
+- A HEX color is not 3 or 6 digits
+- An RGB tuple does not contain exactly 3 channels
+- An RGB channel is outside the `0-255` range
+- A contrast ratio or precision value is invalid
+
+## Development
+
+Use Node.js `22` or newer for local development.
 
 ```sh
-yarn add wcag-contrast-utils
+npm run validate
 ```
 
-## Usage
+This runs linting, type-checking, tests, package validation, the production build, and the bundle size check.
 
-### Importing
+Useful commands:
 
-```typescript
-import { contrastRatio, passesWCAG } from "wcag-contrast-utils";
+```sh
+npm run dev
+npm run test:watch
+npm run pack:check
 ```
 
-### Calculating Contrast Ratio
+## Releases
 
-The `contrastRatio` function calculates the contrast ratio between two colors, which can be provided as hexadecimal strings or RGB arrays.
-
-```typescript
-const ratio1 = contrastRatio("#000000", "#ffffff"); // 21
-const ratio2 = contrastRatio([0, 0, 0], [255, 255, 255]); // 21
-const ratio3 = contrastRatio("#777777", "#ffffff"); // 4.47
-```
-
-### Checking WCAG Compliance
-
-The `passesWCAG` function takes a contrast ratio value and returns the highest WCAG compliance level met.
-
-```typescript
-console.log(passesWCAG(2));   // "Not WCAG Compliant"
-console.log(passesWCAG(3));   // "WCAG 2 AA Compliant Large Text"
-console.log(passesWCAG(4.5)); // "WCAG 2 AAA Compliant Large Text"
-console.log(passesWCAG(7));   // "WCAG 2 AAA Compliant"
-```
-
-## WCAG 2.1 - Contrast Requirements
-
-According to WCAG 2.1 guidelines, the required contrast ratios are:
-
-- **AA (Normal text)**: 4.5:1
-- **AA (Large text)**: 3:1
-- **AAA (Normal text)**: 7:1
-- **AAA (Large text)**: 4.5:1
-
-## Contributing
-
-If you want to contribute to the project, feel free to open an issue or submit a pull request!
+- Configure npm Trusted Publishing for this repository and point it to `release.yml`
+- Bump `package.json` to the target version
+- Push a matching tag such as `v1.0.2` or `v1.1.0-beta.0`
+- The release workflow validates the package, publishes to npm, and creates a GitHub Release automatically
+- Stable tags publish to `latest`; prerelease tags publish to `next`
 
 ## License
 
-This project is released under the MIT license.
+MIT
