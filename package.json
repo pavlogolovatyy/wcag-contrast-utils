@@ -1,6 +1,6 @@
 {
   "name": "wcag-contrast-utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A production-ready TypeScript utility for calculating contrast ratios and validating WCAG 2.1 color accessibility requirements.",
   "type": "module",
   "packageManager": "npm@11.6.1",
